@@ -10,5 +10,5 @@ app.post('/chatbot', askToChatGpt);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`服务运行 端口 ${PORT}`);
+    console.log(`服务运行成功🚀🚀🚀 端口:${PORT}`);
 });
