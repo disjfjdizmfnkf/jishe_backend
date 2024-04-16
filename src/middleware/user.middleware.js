@@ -1,6 +1,6 @@
 const UserService = require("../service/user.service");
 const {NAME_OR_PASSWORD_IS_REQUIRED, USER_IS_ALREADY_EXISTS} = require("../config/error");
-const sha256 = require("../utils/md5password");
+const md5password = require("../utils/sha256password");
 
 const verifyUser = async (ctx, next) => {
 
@@ -26,7 +26,7 @@ const handlePassword = async (ctx, next) => {
     const { password } = ctx.request.body
 
     // 2.使用sha256加密
-    ctx.request.body.password = sha256(password)
+    ctx.request.body.password = md5password(password)
 
     await next()
 }

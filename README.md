@@ -1,8 +1,11 @@
-# AI聊天后端
+# 项目的后端部分（
 
-## 使用AI聊天功能需要先启动这个后端服务器
-
+## 启动项目
 ```sh
-node index.js
+npm run start
 ```
 
+## 使用nodemon启动项目
+```sh
+npm run nodemon
+```
