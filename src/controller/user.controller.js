@@ -1,15 +1,14 @@
 const UserService = require('../service/user.service')
-const connection = require("../app/database");
 
 class UserController {
     async creat(ctx, next) {
         // 获取用户信息
         const user = ctx.request.body
 
-
         // 将数据存入数据库
         const result = await UserService.create(user)
 
+        console.log('Result from UserService.create:', result)
 
         ctx.body = {
             message: '创建用户成功!',

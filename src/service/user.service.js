@@ -1,7 +1,7 @@
 const connection = require('../app/database')
 
-class UserService{
-    async create(user){
+class UserService {
+    async create(user) {
         // 1.获取user
         const {name, password} = user
 
@@ -12,7 +12,8 @@ class UserService{
         const [result] = await connection.execute(statement, [name, password]);
         return result
     }
-    async findUser(name){
+
+    async findUser(name) {
         const statement = 'SELECT * FROM `user` WHERE name = ?;'
         const [values] = await connection.execute(statement, [name])
         return values

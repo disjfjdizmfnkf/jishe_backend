@@ -1,6 +1,7 @@
 // 导入app
 const app = require('./app/index')
 const {SERVER_PORT} = require("./config/server");
+require('./utils/handle-error')
 
 // 启动服务器
 app.listen(SERVER_PORT, () => {
