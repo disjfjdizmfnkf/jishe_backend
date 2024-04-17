@@ -3,12 +3,16 @@ const md5password = require("../utils/sha256password");
 
 const {
     NAME_OR_PASSWORD_IS_REQUIRED,
-    USER_IS_NOT_EXISTS, PASSWORD_ERROR,
+    USER_IS_NOT_EXISTS, PASSWORD_ERROR, UNAUTHORIZED,
 } = require("../config/error");
+
+const jwt = require("jsonwebtoken");
+const {PUBLIC_KEY} = require("../config/secret");
+
 
 const verifyLogin = async (ctx, next) => {
 
-    const { name, password } = ctx.request.body
+    const {name, password} = ctx.request.body
 
 
     // 检查输入是否为空
@@ -35,6 +39,25 @@ const verifyLogin = async (ctx, next) => {
     await next()
 }
 
+const verifyAuth = async (ctx, next) => {
+    // 获取用户传入的token
+    const authorization = ctx.headers.authorization
+    const token = authorization.replace('Bearer ', '')
+
+    try {
+        // 验证token并保存
+        ctx.user = jwt.verify(token, PUBLIC_KEY, {
+            algorithm: ['RS256']
+        })
+
+        await next()
+    } catch (error) {
+        ctx.app.emit('error', UNAUTHORIZED)
+    }
+}
+
+
 module.exports = {
-    verifyLogin
+    verifyLogin,
+    verifyAuth
 }

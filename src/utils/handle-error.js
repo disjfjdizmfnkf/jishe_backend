@@ -1,5 +1,5 @@
 const app = require('../app/index')
-const {NAME_OR_PASSWORD_IS_REQUIRED, USER_IS_ALREADY_EXISTS, USER_IS_NOT_EXISTS, PASSWORD_ERROR} = require('../config/error')
+const {NAME_OR_PASSWORD_IS_REQUIRED, USER_IS_ALREADY_EXISTS, USER_IS_NOT_EXISTS, PASSWORD_ERROR, UNAUTHORIZED} = require('../config/error')
 
 app.on('error', (error, ctx) => {
     let code = 0
@@ -20,6 +20,10 @@ app.on('error', (error, ctx) => {
         case PASSWORD_ERROR:
             code = -1004
             message = '密码错误'
+            break
+        case UNAUTHORIZED:
+            code = -1005
+            message = '未授权的token'
             break
     }
 
