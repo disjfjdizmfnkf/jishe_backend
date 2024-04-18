@@ -1,5 +1,7 @@
 const app = require('../app/index')
-const {NAME_OR_PASSWORD_IS_REQUIRED, USER_IS_ALREADY_EXISTS, USER_IS_NOT_EXISTS, PASSWORD_ERROR, UNAUTHORIZED} = require('../config/error')
+const {NAME_OR_PASSWORD_IS_REQUIRED, USER_IS_ALREADY_EXISTS, USER_IS_NOT_EXISTS, PASSWORD_ERROR, UNAUTHORIZED,
+    PERMISSION_DENIED
+} = require('../config/error')
 
 app.on('error', (error, ctx) => {
     let code = 0
@@ -25,6 +27,9 @@ app.on('error', (error, ctx) => {
             code = -1005
             message = '未授权的token'
             break
+        case PERMISSION_DENIED:
+            code = -2001
+            message = '没有权限'
     }
 
 
