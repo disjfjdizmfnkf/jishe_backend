@@ -42,17 +42,21 @@ const verifyLogin = async (ctx, next) => {
 const verifyAuth = async (ctx, next) => {
     // 获取用户传入的token
     const authorization = ctx.headers.authorization
+    if (!authorization) {
+        return ctx.app.emit('error', UNAUTHORIZED, ctx)
+    }
+
     const token = authorization.replace('Bearer ', '')
 
     try {
-        // 验证token并保存
+        // 验证token并保存payload中提交验证时的用户信息
         ctx.user = jwt.verify(token, PUBLIC_KEY, {
             algorithm: ['RS256']
         })
 
         await next()
     } catch (error) {
-        ctx.app.emit('error', UNAUTHORIZED)
+        ctx.app.emit('error', UNAUTHORIZED, ctx)
     }
 }
 

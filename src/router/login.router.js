@@ -1,10 +1,10 @@
 const KoaRouter = require('@koa/router')
-const LoginController = require("../controller/login.controller")
+const {sign, test} = require("../controller/login.controller")
 const {verifyLogin, verifyAuth} = require("../middleware/login.middleware");
 
 const loginRouter = new KoaRouter({prefix: '/login'})
 
-loginRouter.post('/', verifyLogin, LoginController.sign)
-loginRouter.get('/test', verifyAuth, LoginController.test)
+loginRouter.post('/', verifyLogin, sign)
+loginRouter.get('/test', verifyAuth, test) // 验证token
 
 module.exports = loginRouter

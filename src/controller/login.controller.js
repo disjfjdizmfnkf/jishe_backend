@@ -5,7 +5,7 @@ const {PRIVATE_KEY} = require("../config/secret");
 class LoginController {
     sign(ctx, next) {
         // 1.获取用户信息
-        const {id, name, password} = ctx.user
+        const { id, name } = ctx.user
 
         // 2.颁发token
         let token;
