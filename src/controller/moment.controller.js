@@ -60,6 +60,36 @@ class MomentController {
             data: result
         }
     }
+
+    // 给动态添加标签
+    /*
+    * 1. 获取标签数据，需要得到标签对象列表{name:... id:...}
+    * 2. 检查关系数据库中关系是否存在
+    * 3. 不存在：插入关系
+    * */
+    async addLabels(ctx, next) {
+        try {
+            // 1.获取labels数据
+            const { labels }= ctx
+            const { momentId } = ctx.params
+
+            //2.检查label是否添加过
+            for (const label of labels) {
+                const isExists = await MomentService.hasLabel(momentId, label.id)
+                if (!isExists) {
+                    // 2.1插入
+                    const result = await MomentService.addLabel(momentId, label.id)
+                }
+            }
+
+            ctx.body = {
+                code: 0,
+                message: '动态添加标成功~'
+            }
+        } catch (error) {
+            ctx.body = error
+        }
+    }
 }
 
 module.exports = new MomentController()
