@@ -17,7 +17,7 @@ class MomentService {
                        u.name                                                                                  name,
                        m.updateAt                                                                              updateTime,
                        m.createAt                                                                              createTime,
-                       JSON_OBJECT('id', u.id, 'name', u.name, 'createAt', u.createAt, 'updateAt', m.updateAt) user,
+                       JSON_OBJECT('id', u.id, 'name', u.name, 'avatar_url', u.avatar_url, 'createAt', u.createAt, 'updateAt', m.updateAt) user,
                        (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id)                               commentCount, 
                        (SELECT COUNT(*) FROM moment_label ml WHERE ml.moment_id = m.id)                        labelCount
                 FROM \`moment\` m
@@ -38,8 +38,8 @@ class MomentService {
                     m.content content,
                     m.createAt creatTime,
                     m.updateAt updateTime,
-                    JSON_OBJECT('id', u.id, 'name', u.name, 'creatTime', u.createAt) user,
-                    JSON_ARRAYAGG(JSON_OBJECT('id', c.id, 'content', c.content, 'comment', c.comment_id, 'user', JSON_OBJECT('id', cu.id, 'name', cu.name))) comment,
+                    JSON_OBJECT('id', u.id, 'name', u.name, 'avatarUrl', u.avatar_url, 'creatTime', u.createAt) user,
+                    JSON_ARRAYAGG(JSON_OBJECT('id', c.id, 'content', c.content, 'comment', c.comment_id, 'user', JSON_OBJECT('id', cu.id, 'name', cu.name,  'avatarUrl', cu.avatar_url))) comment,
                     (
                         SELECT
                             JSON_ARRAYAGG(JSON_OBJECT('id', l.id, 'name', l.name))
