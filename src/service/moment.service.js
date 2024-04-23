@@ -8,22 +8,44 @@ class MomentService {
         return result
     }
 
-    // 查询动态返回评论个数和标签数
-    async queryList(offset = 0, size = 10) {
+    // 查询动态返回动态信息，评论信息，评论用户信息
+    async queryList(offset = 0, size = 3) {
         const statement =
             `
-                SELECT m.id                                                                                    id,
-                       m.content                                                                               content,
-                       u.name                                                                                  name,
-                       m.updateAt                                                                              updateTime,
-                       m.createAt                                                                              createTime,
-                       JSON_OBJECT('id', u.id, 'name', u.name, 'avatar_url', u.avatar_url, 'createAt', u.createAt, 'updateAt', m.updateAt) user,
-                       (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id)                               commentCount, 
-                       (SELECT COUNT(*) FROM moment_label ml WHERE ml.moment_id = m.id)                        labelCount
-                FROM \`moment\` m
-                         LEFT JOIN user u ON m.user_id = u.id
-                LIMIT ? OFFSET ?;
-            `
+            SELECT
+                m.id id,
+                m.content content,
+                m.createAt createTime,
+                m.updateAt updateTime,
+                m.likes uerLikes,
+                JSON_OBJECT('id', u.id, 'name', u.name, 'avatar_url', u.avatar_url, 'createAt', u.createAt, 'updateAt', m.updateAt, 'likesCount', m.likes) user,
+                (
+                    SELECT
+                        JSON_ARRAYAGG(JSON_OBJECT('id', c.id, 'content', c.content, 'comment', c.comment_id, 'user', JSON_OBJECT('id', cu.id, 'name', cu.name,  'avatarUrl', cu.avatar_url)))
+                    FROM
+                        comment c
+                            LEFT JOIN
+                        user cu ON cu.id = c.user_id
+                    WHERE
+                        m.id = c.moment_id
+                ) comments,
+                (
+                    SELECT
+                        JSON_ARRAYAGG(JSON_OBJECT('id', l.id, 'name', l.name))
+                    FROM
+                        moment_label ml
+                            JOIN label l ON ml.label_id = l.id
+                    WHERE
+                        ml.moment_id = m.id
+                ) labels,
+                (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id) commentCount, 
+                (SELECT COUNT(*) FROM moment_label ml WHERE ml.moment_id = m.id) labelCount
+            FROM
+                moment m
+                    LEFT JOIN
+                user u ON m.user_id = u.id
+            LIMIT ? OFFSET ?;
+        `
 
         const [result] = await connection.execute(statement, [String(size), String(offset)])
         return result
@@ -92,6 +114,19 @@ class MomentService {
         return result
     }
 
+    // 点赞
+    async like(momentId) {
+        const statement = 'UPDATE `moment` SET `likes` = `likes` + 1 WHERE `id` = ?;'
+        const [result] = await connection.execute(statement, [momentId])
+        return result
+    }
+
+    // 取消赞
+    async unLike(momentId) {
+        const statement = 'UPDATE `moment` SET `likes` = `likes` - 1 WHERE `id` = ?;'
+        const [result] = await connection.execute(statement, [momentId])
+        return result
+    }
 }
 
 

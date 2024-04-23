@@ -90,6 +90,28 @@ class MomentController {
             ctx.body = error
         }
     }
+
+    // 点赞
+    async like(ctx, next) {
+        const {momentId} = ctx.params
+        const result = await MomentService.like(momentId)
+        ctx.body = {
+            code: 0,
+            message: '点赞成功',
+            data: result
+        }
+    }
+
+    // 取消点赞
+    async unLike(ctx, next) {
+        const {momentId} = ctx.params
+        const result = await MomentService.unLike(momentId)
+        ctx.body = {
+            code: 0,
+            message: '取消点赞成功',
+            data: result
+        }
+    }
 }
 
 module.exports = new MomentController()
