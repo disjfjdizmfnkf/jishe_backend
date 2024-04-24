@@ -1,4 +1,7 @@
 const MomentService = require('../service/moment.service')
+const fs = require("fs");
+const {UPLOAD_PATH} = require("../config/path");
+const FileService = require("../service/file.service");
 
 class MomentController {
 
@@ -111,6 +114,17 @@ class MomentController {
             message: '取消点赞成功',
             data: result
         }
+    }
+
+    async showPhotos(ctx, next) {
+        const {momentId} = ctx.params
+
+        const photoInfo = await MomentService.showPhotos(momentId)
+
+        const { filename, mimetype } = photoInfo
+        ctx.type = mimetype
+        ctx.body = fs.createReadStream(`${UPLOAD_PATH}/${filename}`)
+
     }
 }
 

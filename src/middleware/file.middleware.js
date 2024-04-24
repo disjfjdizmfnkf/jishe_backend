@@ -7,6 +7,14 @@ const uploadAvatar = multer({
 })
 const handleAvatar = uploadAvatar.single('avatar')
 
+// 上传动态图片的中间件
+const uploadMomentPhotos = multer({
+    dest: UPLOAD_PATH
+})
+const handleMomentPhotos = uploadMomentPhotos.single('photo')
+
+
 module.exports = {
-    handleAvatar
+    handleAvatar,
+    handleMomentPhotos
 }

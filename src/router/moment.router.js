@@ -1,6 +1,6 @@
 const KoaRouter = require('@koa/router')
 const {verifyAuth} = require("../middleware/login.middleware");
-const { creat, list, detail, update, remove, addLabels, like, unLike } = require("../controller/moment.controller")
+const { creat, list, detail, update, remove, addLabels, like, unLike, showPhotos } = require("../controller/moment.controller")
 const {verifyPermission} = require("../middleware/permission.middleware");
 const {verifyLabelExists} = require("../middleware/label.middleware");
 
@@ -29,5 +29,7 @@ momentRouter.post('/label/:momentId', verifyAuth, verifyPermission, verifyLabelE
 momentRouter.patch('/like/:momentId', verifyAuth, like)
 momentRouter.patch('/unLike/:momentId', verifyAuth, unLike)
 
+// 查看动态图片
+momentRouter.get('/photos/:momentId', showPhotos)
 
 module.exports = momentRouter

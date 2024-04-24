@@ -12,40 +12,31 @@ class MomentService {
     async queryList(offset = 0, size = 3) {
         const statement =
             `
-            SELECT
-                m.id id,
-                m.content content,
-                m.createAt createTime,
-                m.updateAt updateTime,
-                m.likes uerLikes,
-                JSON_OBJECT('id', u.id, 'name', u.name, 'avatar_url', u.avatar_url, 'createAt', u.createAt, 'updateAt', m.updateAt, 'likesCount', m.likes) user,
-                (
-                    SELECT
-                        JSON_ARRAYAGG(JSON_OBJECT('id', c.id, 'content', c.content, 'comment', c.comment_id, 'user', JSON_OBJECT('id', cu.id, 'name', cu.name,  'avatarUrl', cu.avatar_url)))
-                    FROM
-                        comment c
-                            LEFT JOIN
-                        user cu ON cu.id = c.user_id
-                    WHERE
-                        m.id = c.moment_id
-                ) comments,
-                (
-                    SELECT
-                        JSON_ARRAYAGG(JSON_OBJECT('id', l.id, 'name', l.name))
-                    FROM
-                        moment_label ml
-                            JOIN label l ON ml.label_id = l.id
-                    WHERE
-                        ml.moment_id = m.id
-                ) labels,
-                (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id) commentCount, 
-                (SELECT COUNT(*) FROM moment_label ml WHERE ml.moment_id = m.id) labelCount
-            FROM
-                moment m
-                    LEFT JOIN
-                user u ON m.user_id = u.id
-            LIMIT ? OFFSET ?;
-        `
+                SELECT m.id                                                             id,
+                       m.content                                                        content,
+                       m.createAt                                                       createTime,
+                       m.updateAt                                                       updateTime,
+                       m.likes                                                          uerLikes,
+                       JSON_OBJECT('id', u.id, 'name', u.name, 'avatar_url', u.avatar_url, 'createAt', u.createAt,
+                                   'updateAt', m.updateAt, 'likesCount', m.likes)       user,
+                       (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', c.id, 'content', c.content, 'comment', c.comment_id,
+                                                         'user', JSON_OBJECT('id', cu.id, 'name', cu.name, 'avatarUrl',
+                                                                             cu.avatar_url)))
+                        FROM comment c
+                                 LEFT JOIN
+                             user cu ON cu.id = c.user_id
+                        WHERE m.id = c.moment_id)                                       comments,
+                       (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', l.id, 'name', l.name))
+                        FROM moment_label ml
+                                 JOIN label l ON ml.label_id = l.id
+                        WHERE ml.moment_id = m.id)                                      labels,
+                       (SELECT COUNT(*) FROM comment c WHERE c.moment_id = m.id)        commentCount,
+                       (SELECT COUNT(*) FROM moment_label ml WHERE ml.moment_id = m.id) labelCount
+                FROM moment m
+                         LEFT JOIN
+                     user u ON m.user_id = u.id
+                LIMIT ? OFFSET ?;
+            `
 
         const [result] = await connection.execute(statement, [String(size), String(offset)])
         return result
@@ -55,30 +46,25 @@ class MomentService {
     async queryByID(id) {
         const statement =
             `
-                SELECT
-                    m.id id,
-                    m.content content,
-                    m.createAt creatTime,
-                    m.updateAt updateTime,
-                    JSON_OBJECT('id', u.id, 'name', u.name, 'avatarUrl', u.avatar_url, 'creatTime', u.createAt) user,
-                    JSON_ARRAYAGG(JSON_OBJECT('id', c.id, 'content', c.content, 'comment', c.comment_id, 'user', JSON_OBJECT('id', cu.id, 'name', cu.name,  'avatarUrl', cu.avatar_url))) comment,
-                    (
-                        SELECT
-                            JSON_ARRAYAGG(JSON_OBJECT('id', l.id, 'name', l.name))
-                        FROM
-                            moment_label ml
-                                JOIN label l ON ml.label_id = l.id
-                        WHERE
-                            ml.moment_id = m.id
-                    ) labels
-                FROM
-                    moment m
-                        LEFT JOIN
-                    user u ON m.user_id = u.id
-                        LEFT JOIN
-                    comment c ON m.id = c.moment_id
-                        LEFT JOIN
-                    user cu ON cu.id = c.user_id
+                SELECT m.id                                                                                        id,
+                       m.content                                                                                   content,
+                       m.createAt                                                                                  creatTime,
+                       m.updateAt                                                                                  updateTime,
+                       JSON_OBJECT('id', u.id, 'name', u.name, 'avatarUrl', u.avatar_url, 'creatTime', u.createAt) user,
+                       JSON_ARRAYAGG(JSON_OBJECT('id', c.id, 'content', c.content, 'comment', c.comment_id, 'user',
+                                                 JSON_OBJECT('id', cu.id, 'name', cu.name, 'avatarUrl',
+                                                             cu.avatar_url)))                                      comment,
+                       (SELECT JSON_ARRAYAGG(JSON_OBJECT('id', l.id, 'name', l.name))
+                        FROM moment_label ml
+                                 JOIN label l ON ml.label_id = l.id
+                        WHERE ml.moment_id = m.id)                                                                 labels
+                FROM moment m
+                         LEFT JOIN
+                     user u ON m.user_id = u.id
+                         LEFT JOIN
+                     comment c ON m.id = c.moment_id
+                         LEFT JOIN
+                     user cu ON cu.id = c.user_id
                 WHERE m.id = ?
                 GROUP BY m.id;
             `
@@ -126,6 +112,21 @@ class MomentService {
         const statement = 'UPDATE `moment` SET `likes` = `likes` - 1 WHERE `id` = ?;'
         const [result] = await connection.execute(statement, [momentId])
         return result
+    }
+
+    //  查询所有图片并且返回url列表
+    async showPhotos(momentId) {
+        const statement =
+            `
+                SELECT moment_photos.id        id,
+                       moment_photos.filename filename,
+                       moment_photos.mimetype mimetype,
+                       moment_photos.size size
+                FROM moment_photos
+                WHERE moment_photos.moment_id = ?;
+            `;
+        const [result] = await connection.execute(statement, [momentId])
+        return result.pop()
     }
 }
 
