@@ -102,16 +102,24 @@ class MomentService {
 
     // 点赞
     async like(momentId) {
-        const statement = 'UPDATE `moment` SET `likes` = `likes` + 1 WHERE `id` = ?;'
-        const [result] = await connection.execute(statement, [momentId])
-        return result
+        const updateStatement = 'UPDATE `moment` SET `likes` = `likes` + 1 WHERE `id` = ?;';
+        await connection.execute(updateStatement, [momentId]);
+
+        const selectStatement = 'SELECT `likes` FROM `moment` WHERE `id` = ?;';
+        const [result] = await connection.execute(selectStatement, [momentId]);
+
+        return result[0];
     }
 
     // 取消赞
     async unLike(momentId) {
-        const statement = 'UPDATE `moment` SET `likes` = `likes` - 1 WHERE `id` = ?;'
-        const [result] = await connection.execute(statement, [momentId])
-        return result
+        const updateStatement = 'UPDATE `moment` SET `likes` = `likes` - 1 WHERE `id` = ?;';
+        await connection.execute(updateStatement, [momentId]);
+
+        const selectStatement = 'SELECT `likes` FROM `moment` WHERE `id` = ?;';
+        const [result] = await connection.execute(selectStatement, [momentId]);
+
+        return result[0];
     }
 
     //  查询所有图片并且返回url列表
