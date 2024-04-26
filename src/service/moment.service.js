@@ -122,7 +122,7 @@ class MomentService {
         return result[0];
     }
 
-    //  查询所有图片并且返回url列表
+    //  查询动态图片并且返回url
     async showPhotos(momentId) {
         const statement =
             `
