@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { API_KEY, SECRET_KEY} = require('../config/server')
+const { API_KEY, SECRET_KEY, PROMPT} = require('../config/server')
 
 
 const getAccessToken = async () => {
@@ -17,8 +17,11 @@ const askToChatGpt = async function (ctx) {
                     content: ctx.request.body.message,
                 },
             ],
+            system: PROMPT, //使用自己定义的prompt
+            // stream: true, //以流式接口的形式返回数据
         });
         // 响应体内容 koa会自动设置响应头
+        console.log(resp)  //看下开发api调用到期没，每天次数够不够。。。
         ctx.body = { from: "chatGpt", data: resp.data.result };
     } catch (error) {
         console.log("Error ", error);

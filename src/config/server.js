@@ -3,6 +3,7 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 module.exports = {
+    PROMPT,
     API_KEY,
     SECRET_KEY,
     SERVER_PORT,
