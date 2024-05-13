@@ -3,7 +3,7 @@ const dotenv = require('dotenv')
 dotenv.config()
 
 module.exports = {
-    PROMPT,
+    CHAT_PROMPT,
     API_KEY,
     SECRET_KEY,
     SERVER_PORT,
